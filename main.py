@@ -16,15 +16,9 @@ dp = Dispatcher()
 dp.include_router(router)
 
 
-async def main():
-    try:
-        await dp.start_polling(bot)
-    finally:
-        await db_session.close()
-
-
 async def handle(request):
     return web.Response(text="I am alive")
+
 
 async def run_web_server():
     app = web.Application()
@@ -33,7 +27,23 @@ async def run_web_server():
     await runner.setup()
     site = web.TCPSite(runner, '0.0.0.0', port=8080)
     await site.start()
+    try:
+        while True:
+            await asyncio.sleep(3600)
+    except asyncio.CancelledError:
+        pass
 
-asyncio.create_task(run_web_server())
+
+async def main():
+    server_task = asyncio.create_task(run_web_server())
+    try:
+        await dp.start_polling(bot)
+    finally:
+        server_task.cancel()
+        try:
+            await server_task
+        except asyncio.CancelledError:
+            pass
+        await db_session.close()
 if __name__ == "__main__":
     asyncio.run(main())
