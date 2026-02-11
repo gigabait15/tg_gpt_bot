@@ -9,12 +9,12 @@ WORKDIR /app
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY pyproject.toml
+COPY pyproject.toml ./
 
 RUN uv sync --frozen --no-dev
 
 COPY . .
 
-EXPOSE 8000
+EXPOSE 8080
 
 CMD ["uv","-n", "run","python", "-m", "main"]
