@@ -15,6 +15,6 @@ RUN uv sync --frozen --no-dev
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["uv", "run", "--no-sync", "main.py"]
+CMD ["uv","-n", "run","python", "-m", "main"]
